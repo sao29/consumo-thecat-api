@@ -1,6 +1,7 @@
 const API_URL_RANDOM = 'https://api.thecatapi.com/v1/images/search?limit=2&api_key=a436c5db-c690-4c4b-a598-fee16aba6889';
 const API_URL_FAVOTITES = 'https://api.thecatapi.com/v1/favourites?api_key=a436c5db-c690-4c4b-a598-fee16aba6889';
 const API_URL_FAVOTITES_DELETE = (id) => `https://api.thecatapi.com/v1/favourites/${id}?api_key=a436c5db-c690-4c4b-a598-fee16aba6889`;
+const API_URL_UPLOAD = 'https://api.thecatapi.com/v1/images/upload';
 
 const spanError = document.getElementById('error')
 
@@ -103,6 +104,34 @@ async function deleteFavouriteMichi(id) {
       loadFavouriteMichis();
     }
   }
+  async function uploadMichiPhoto() {
+    const form = document.getElementById('uploadingForm')
+    const formData = new FormData(form);
+  
+    console.log(formData.get('file'))
+  
+    const res = await fetch(API_URL_UPLOAD, {
+      method: 'POST',
+      headers: {
+          //no se ocupa poner el boundery ya que fetch pone todo por defecto
+        // 'Content-Type': 'multipart/form-data',
+        'X-API-KEY': 'a436c5db-c690-4c4b-a598-fee16aba6889',
+      },
+      body: formData,
+    })
+    const data = await res.json();
+  
+    if (res.status !== 201) {
+      spanError.innerHTML = "Hubo un error: " + res.status + data.message;
+      console.log({data})
+    } else {
+      console.log('Foto de michi subida :)')
+      console.log({data})
+      console.log(data.url)
+      saveFavouriteMichi(data.id);
+    }
+  }
+  
 
 loadRandomMichis();
 loadFavouriteMichis();
